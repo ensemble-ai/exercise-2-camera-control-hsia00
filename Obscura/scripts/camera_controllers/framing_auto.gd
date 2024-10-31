@@ -1,22 +1,20 @@
 class_name FramingAuto
 extends CameraControllerBase
 
-@export var scroll_speed: float = 2.0 
-@export var box_width:float = dist_above_target * 20
-@export var box_height:float = dist_above_target * 20
-@export var margin: Vector2 = Vector2(100, 100)
+@export var top_left: Vector2 = Vector2(-12, -6)
+@export var bottom_right: Vector2 = Vector2(12, 6)
+@export var autoscroll_speed: Vector3 = Vector3(20, 0, 0)
 
-var screen_size
+var switched:= false
+var screen_size: Vector2
 
 func _ready() -> void:
 	super()
 	position = target.position
-	
 
 func _process(delta: float) -> void:
-	screen_size = get_viewport().size
-	#print(screen_size)
 	if !current:
+		switched = false
 		return
 	
 	if draw_camera_logic:
@@ -25,31 +23,30 @@ func _process(delta: float) -> void:
 	var tpos = target.global_position
 	var cpos = global_position
 	
-	global_position.x += scroll_speed * delta
+	# Set autoscroll start location as current target location
+	if current && !switched:
+		global_position.x = target.global_position.x
+		global_position.z = target.global_position.z
+		switched = true
+	
+	# Camera autoscroll
+	if current:
+		global_position.x += autoscroll_speed.x * delta
+		global_position.z += autoscroll_speed.z * delta
+		target.global_position.x += autoscroll_speed.x * delta
+		target.global_position.z += autoscroll_speed.z * delta
+		tpos = target.global_position
 	
 	# Set target position within the camera boundaries
-	# Calculate the screen boundary limits with margins
-	var min_x = margin.x
-	var max_x = screen_size.x - margin.x
-	var min_z = margin.y
-	var max_z = screen_size.y - margin.y
+	var left_bound = cpos.x + top_left.x + target.WIDTH / 2.0
+	var right_bound = cpos.x + bottom_right.x - target.WIDTH / 2.0
+	var top_bound = cpos.z + top_left.y + target.WIDTH / 2.0
+	var bottom_bound = cpos.z + bottom_right.y - target.WIDTH / 2.0
 	
-	# Convert the target's world position to screen coordinates
-	var screen_position = unproject_position(tpos)
-	print(screen_position)
-	# Check if target is outside the screen boundaries
-	if screen_position.x <= min_x:
-		global_position.x -= min_x - screen_position.x
-	elif screen_position.x >= max_x:
-		global_position.x += screen_position.x - max_x
-
-	if screen_position.y <= min_z:
-		global_position.z -= min_z - screen_position.y
-	elif screen_position.y >= max_z:
-		global_position.z += screen_position.y - max_z
-		
+	# Constrain target within the camera bounds in x and z directions
+	target.global_position.x = clamp(tpos.x, left_bound, right_bound)
+	target.global_position.z = clamp(tpos.z, top_bound, bottom_bound)
 	super(delta)
-
 
 func draw_logic() -> void:
 	var mesh_instance := MeshInstance3D.new()
@@ -62,10 +59,10 @@ func draw_logic() -> void:
 	immediate_mesh.surface_begin(Mesh.PRIMITIVE_LINES, material)
 	
 	# Calculate screen boundary corners with margins
-	var left = margin.x
-	var right = screen_size.x - margin.x
-	var top = margin.y
-	var bottom = screen_size.y - margin.y
+	var left = top_left.x
+	var right = bottom_right.x
+	var top = top_left.y
+	var bottom = bottom_right.y
 
 	# Draw lines between the corners to form a rectangle
 	immediate_mesh.surface_add_vertex(Vector3(left, 0, top))
