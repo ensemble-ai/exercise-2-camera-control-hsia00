@@ -1,17 +1,20 @@
 class_name PositionLockLerp
 extends CameraControllerBase
 
+@export var follow_speed: float = 2.0
+@export var catchup_speed: float = 5.0
+@export var leash_distance: float = 25.0
+@export var crosshair_length: float = 5.0
 
-@export var crosshair_length:float = 5.0
-
+var switched:= false
 
 func _ready() -> void:
 	super()
 	position = target.position
-	
 
 func _process(delta: float) -> void:
 	if !current:
+		switched = false
 		return
 	
 	if draw_camera_logic:
@@ -19,9 +22,27 @@ func _process(delta: float) -> void:
 	
 	var tpos = target.global_position
 	var cpos = global_position
+	var distance_to_target = tpos.distance_to(cpos)
 	
-	global_position.x = tpos.x
-	global_position.z = tpos.z
+	if !switched:
+		global_position.x = target.global_position.x
+		global_position.z = target.global_position.z
+		switched = true
+	
+	# Determine speed based on target's movement status
+	if target.velocity == Vector3.ZERO:
+		# Smoothly approach the target within the leash range
+		global_position.x = lerp(cpos.x, tpos.x, catchup_speed * delta)
+		global_position.z = lerp(cpos.z, tpos.z, catchup_speed * delta)
+	# If target moving
+	else:
+		var at_leash = abs(distance_to_target - leash_distance) <= 1.0
+		if !at_leash:
+			global_position.x = lerp(cpos.x, tpos.x, follow_speed * delta)
+			global_position.z = lerp(cpos.z, tpos.z, follow_speed * delta)
+		else:
+			global_position.x += target.velocity.x * delta
+			global_position.z += target.velocity.z * delta
 		
 	super(delta)
 
@@ -38,7 +59,6 @@ func draw_logic() -> void:
 	# Horizontal line
 	immediate_mesh.surface_add_vertex(Vector3(-crosshair_length, 0, 0))  # Left
 	immediate_mesh.surface_add_vertex(Vector3(crosshair_length, 0, 0))   # Right
-
 	# Vertical line
 	immediate_mesh.surface_add_vertex(Vector3(0, 0, -crosshair_length))  # Top
 	immediate_mesh.surface_add_vertex(Vector3(0, 0, crosshair_length))   # Bottom

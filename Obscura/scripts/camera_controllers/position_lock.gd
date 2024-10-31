@@ -38,7 +38,6 @@ func draw_logic() -> void:
 	# Horizontal line
 	immediate_mesh.surface_add_vertex(Vector3(-crosshair_length, 0, 0))  # Left
 	immediate_mesh.surface_add_vertex(Vector3(crosshair_length, 0, 0))   # Right
-
 	# Vertical line
 	immediate_mesh.surface_add_vertex(Vector3(0, 0, -crosshair_length))  # Top
 	immediate_mesh.surface_add_vertex(Vector3(0, 0, crosshair_length))   # Bottom

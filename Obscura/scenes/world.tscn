@@ -110,8 +110,12 @@ script = ExtResource("3_4fllx")
 [node name="PositionLockLerpCamera" parent="." node_paths=PackedStringArray("target") instance=ExtResource("3_ttnp6")]
 transform = Transform3D(1, 0, 0, 0, 1.19249e-08, 1, 0, -1, 1.19249e-08, 0, 30, 0)
 script = ExtResource("7_aurmt")
+follow_speed = 2.0
+catchup_speed = 5.0
+leash_distance = 25.0
 crosshair_length = 5.0
 target = NodePath("../Vessel")
+dist_above_target = 20.0
 
 [node name="debug" type="Label" parent="PositionLockLerpCamera"]
 visible = false
@@ -122,8 +126,13 @@ script = ExtResource("3_4fllx")
 [node name="TargetFocusLerpCamera" parent="." node_paths=PackedStringArray("target") instance=ExtResource("3_ttnp6")]
 transform = Transform3D(1, 0, 0, 0, 1.19249e-08, 1, 0, -1, 1.19249e-08, 0, 30, 0)
 script = ExtResource("8_2afbe")
+lead_speed = 40.0
+catchup_delay_duration = 0.5
+catchup_speed = 5.0
+leash_distance = 25.0
 crosshair_length = 5.0
 target = NodePath("../Vessel")
+dist_above_target = 20.0
 
 [node name="debug" type="Label" parent="TargetFocusLerpCamera"]
 visible = false

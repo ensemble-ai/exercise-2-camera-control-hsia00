@@ -24,7 +24,7 @@ func _process(delta: float) -> void:
 	var cpos = global_position
 	
 	# Set autoscroll start location as current target location
-	if current && !switched:
+	if !switched:
 		global_position.x = target.global_position.x
 		global_position.z = target.global_position.z
 		switched = true
