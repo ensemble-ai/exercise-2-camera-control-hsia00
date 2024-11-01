@@ -19,15 +19,15 @@ func _process(delta: float) -> void:
 	
 	if draw_camera_logic:
 		draw_logic()
-	
-	var tpos = target.global_position
-	var cpos = global_position
-	
-	# Set autoscroll start location as current target location
+		
+	# Set start location as current target location
 	if !switched:
 		global_position.x = target.global_position.x
 		global_position.z = target.global_position.z
 		switched = true
+		
+	var tpos = target.global_position
+	var cpos = global_position
 	
 	# Camera autoscroll
 	if current:

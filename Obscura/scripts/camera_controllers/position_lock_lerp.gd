@@ -19,15 +19,18 @@ func _process(delta: float) -> void:
 	
 	if draw_camera_logic:
 		draw_logic()
-	
-	var tpos = target.global_position
-	var cpos = global_position
-	var distance_to_target = tpos.distance_to(cpos)
-	
+		
+	# Set start location as current target location
 	if !switched:
 		global_position.x = target.global_position.x
 		global_position.z = target.global_position.z
 		switched = true
+		
+	var tpos = target.global_position
+	var cpos = global_position
+	var distance_to_target = tpos.distance_to(cpos)
+	
+	
 	
 	# Use distance difference to implement lerping effect
 	var direction = (tpos - cpos).normalized()

@@ -18,7 +18,6 @@ func _process(delta: float) -> void:
 		draw_logic()
 	
 	var tpos = target.global_position
-	var cpos = global_position
 	
 	global_position.x = tpos.x
 	global_position.z = tpos.z
