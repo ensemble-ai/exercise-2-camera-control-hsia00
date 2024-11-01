@@ -40,7 +40,7 @@ func _process(delta: float) -> void:
 	var direction = (tpos - cpos).normalized()
 	# Determine speed based on target's movement status
 	if target.velocity == Vector3.ZERO:
-		# Delay if delay flag set
+		# Delay if delay flag set start timer
 		if delay:
 			timer.start()
 			delay = false
@@ -52,6 +52,7 @@ func _process(delta: float) -> void:
 	else:
 		# Reset delay flag when start moving
 		delay = true
+		# Check distance
 		if distance_to_target < leash_distance:
 			var ahead_position = tpos + target.velocity.normalized() * leash_distance
 			var move_direction = (ahead_position - cpos).normalized()
