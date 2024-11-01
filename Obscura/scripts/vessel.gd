@@ -11,7 +11,7 @@ const WIDTH:float = RADIUS * 2.0
 const BASE_SPEED = 50
 const HYPER_SPEED = 300
 
-func _physics_process(_delta):
+func _process(_delta):
 	var speed = BASE_SPEED
 	$ParticleTrail.visible = false 
 	if Input.is_action_pressed("ui_accept"):
@@ -42,7 +42,6 @@ func _physics_process(_delta):
 	else:
 		velocity.x = move_toward(velocity.x, 0, speed)
 		velocity.z = move_toward(velocity.z, 0, speed)
-		
 
 	move_and_slide()
 

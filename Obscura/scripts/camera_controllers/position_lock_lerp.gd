@@ -1,8 +1,8 @@
 class_name PositionLockLerp
 extends CameraControllerBase
 
-@export var follow_speed: float = 2.0
-@export var catchup_speed: float = 5.0
+@export var follow_speed: float = 100.0
+@export var catchup_speed: float = 50.0
 @export var leash_distance: float = 25.0
 @export var crosshair_length: float = 5.0
 
@@ -29,20 +29,18 @@ func _process(delta: float) -> void:
 		global_position.z = target.global_position.z
 		switched = true
 	
+	# Use distance difference to implement lerping effect
+	var direction = (tpos - cpos).normalized()
 	# Determine speed based on target's movement status
 	if target.velocity == Vector3.ZERO:
 		# Smoothly approach the target within the leash range
-		global_position.x = lerp(cpos.x, tpos.x, catchup_speed * delta)
-		global_position.z = lerp(cpos.z, tpos.z, catchup_speed * delta)
+		global_position += direction * catchup_speed * delta
 	# If target moving
 	else:
-		var at_leash = abs(distance_to_target - leash_distance) <= 1.0
-		if !at_leash:
-			global_position.x = lerp(cpos.x, tpos.x, follow_speed * delta)
-			global_position.z = lerp(cpos.z, tpos.z, follow_speed * delta)
+		if distance_to_target < leash_distance:
+			global_position += direction * follow_speed * delta
 		else:
-			global_position.x += target.velocity.x * delta
-			global_position.z += target.velocity.z * delta
+			global_position += target.velocity * delta
 		
 	super(delta)
 

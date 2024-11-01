@@ -2,16 +2,21 @@ class_name TargetFocusLerp
 extends CameraControllerBase
 
 @export var lead_speed: float = 40.0
-@export var catchup_delay_duration: float = 0.5
-@export var catchup_speed: float = 5.0
+@export var catchup_delay_duration: float = 0.1
+@export var catchup_speed: float = 50.0
 @export var leash_distance: float = 25.0
 @export var crosshair_length:float = 5.0
 
 var switched:= false
+var timer:= Timer.new()
+var delay:= false
 
 func _ready() -> void:
 	super()
 	position = target.position
+	add_child(timer)
+	timer.one_shot = true
+	timer.wait_time = catchup_delay_duration
 	
 
 func _process(delta: float) -> void:
@@ -31,25 +36,30 @@ func _process(delta: float) -> void:
 		global_position.z = target.global_position.z
 		switched = true
 	
+	# Use distance to implement lerping effect
+	var direction = (tpos - cpos).normalized()
 	# Determine speed based on target's movement status
 	if target.velocity == Vector3.ZERO:
-		# Smoothly approach the target within the leash range
-		print("catch")
-		global_position.x = lerp(cpos.x, tpos.x, catchup_speed * delta)
-		global_position.z = lerp(cpos.z, tpos.z, catchup_speed * delta)
+		# Delay if delay flag set
+		if delay:
+			timer.start()
+			delay = false
+		# Only move the camera if the timer has finished
+		if timer.is_stopped():
+			# Smoothly approach the target within the leash range
+			global_position += direction * catchup_speed * delta
 	# If target moving
 	else:
-		var at_leash = abs(distance_to_target - leash_distance) <= 1.0
-		if !at_leash:
-			print("lookahead")
-			var desired_position = tpos + target.velocity * lead_speed * delta
-			global_position = lerp(tpos, desired_position, lead_speed * delta)
+		# Reset delay flag when start moving
+		delay = true
+		if distance_to_target < leash_distance:
+			var ahead_position = tpos + target.velocity.normalized() * leash_distance
+			var move_direction = (ahead_position - cpos).normalized()
+			global_position += move_direction * (lead_speed + target.velocity.length()) * delta
 		else:
-			print("leash")
-			global_position.x += target.velocity.x * delta
-			global_position.z += target.velocity.z * delta
+			global_position += target.velocity * delta
 		
-		
+		print(timer.time_left)
 	super(delta)
 
 
