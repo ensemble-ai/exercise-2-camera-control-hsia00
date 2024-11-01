@@ -30,12 +30,8 @@ func _process(delta: float) -> void:
 	var cpos = global_position
 	
 	# Camera autoscroll
-	if current:
-		global_position.x += autoscroll_speed.x * delta
-		global_position.z += autoscroll_speed.z * delta
-		target.global_position.x += autoscroll_speed.x * delta
-		target.global_position.z += autoscroll_speed.z * delta
-		tpos = target.global_position
+	global_position.x += autoscroll_speed.x * delta
+	global_position.z += autoscroll_speed.z * delta
 	
 	# Set target position within the camera boundaries
 	var left_bound = cpos.x + top_left.x + target.WIDTH / 2.0
@@ -46,6 +42,10 @@ func _process(delta: float) -> void:
 	# Constrain target within the camera bounds in x and z directions
 	target.global_position.x = clamp(tpos.x, left_bound, right_bound)
 	target.global_position.z = clamp(tpos.z, top_bound, bottom_bound)
+	# Target following camera autoscroll
+	target.global_position.x += autoscroll_speed.x * delta
+	target.global_position.z += autoscroll_speed.z * delta
+	
 	super(delta)
 
 func draw_logic() -> void:

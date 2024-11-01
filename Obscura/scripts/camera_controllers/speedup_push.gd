@@ -4,8 +4,8 @@ extends CameraControllerBase
 @export var push_ratio: float = 0.6
 @export var pushbox_top_left: Vector2 = Vector2(-12, -12)
 @export var pushbox_bottom_right: Vector2 = Vector2(12, 12)
-@export var speedup_zone_top_left: Vector2 = Vector2(-5, -5)
-@export var speedup_zone_bottom_right: Vector2 = Vector2(5, 5)
+@export var speedup_zone_top_left: Vector2 = Vector2(-6, -6)
+@export var speedup_zone_bottom_right: Vector2 = Vector2(6, 6)
 
 var switched:= false
 var pushed:= false
@@ -90,20 +90,20 @@ func _process(delta: float) -> void:
 				global_position.z += target.velocity.z * delta
 			
 			# Pushing at sides (x)
-			elif touching_left && target.velocity.x < 0 || touching_right && target.velocity.x > 0:
+			elif pushing_only_left || pushing_only_right:
 				# Move fully in x and scaled by push_ratio in z
 				global_position.x += target.velocity.x * delta
 				global_position.z += target.velocity.z * push_ratio * delta
 			
 			# Pushing at sides (z)
-			elif touching_top && target.velocity.z < 0 || touching_bottom && target.velocity.z > 0:
+			elif pushing_only_top || pushing_only_bottom:
 				# Move fully in z and scaled by push_ratio in x
 				global_position.x += target.velocity.x * push_ratio * delta
 				global_position.z += target.velocity.z * delta
 		else:
 			# If pushed, target moves freely
 			pass
-	
+		
 	super(delta)
 	
 func draw_logic() -> void:
