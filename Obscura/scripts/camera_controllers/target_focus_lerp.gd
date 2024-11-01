@@ -59,8 +59,7 @@ func _process(delta: float) -> void:
 			global_position += move_direction * (lead_speed + target.velocity.length()) * delta
 		else:
 			global_position += target.velocity * delta
-		
-		print(timer.time_left)
+
 	super(delta)
 
 

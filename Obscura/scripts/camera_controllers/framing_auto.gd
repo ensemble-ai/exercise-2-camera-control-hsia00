@@ -76,6 +76,7 @@ func draw_logic() -> void:
 
 	immediate_mesh.surface_add_vertex(Vector3(left, 0, bottom))
 	immediate_mesh.surface_add_vertex(Vector3(left, 0, top))
+	
 	immediate_mesh.surface_end()
 
 	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
